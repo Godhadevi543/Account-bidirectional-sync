@@ -1,0 +1,40 @@
+[
+
+{
+"accountName": "godha",
+"accountSite": "aaaa",
+"DUNSNumber": "15-048-3782",
+"jigsaw": "jigsaw1",
+"NAICSCode": "441",
+"nolocations": 2,
+"phone": "(555)-555-5555",
+"SIC": "8742",
+"SLASerialNo": "12345",
+"date": "2020-04-12"
+},
+{
+"accountName": "karthik",
+"accountSite": "aabb",
+"DUNSNumber": "15-018-1282",
+"jigsaw": "jigsaw2",
+"NAICSCode": "445",
+"nolocations": 9,
+"phone": "(555)-222-5555",
+"SIC": "8102",
+"SLASerialNo": "11245",
+"date": "2019-04-12"
+},
+{
+"accountName": "bandari",
+"accountSite": "aacc",
+"DUNSNumber": "25-248-2782",
+"jigsaw": "jigsaw3",
+"NAICSCode": "431",
+"nolocations": 3,
+"phone": "(777)-555-5555",
+"SIC": "8752",
+"SLASerialNo": "15445",
+"date": "2018-04-12"
+}
+
+]

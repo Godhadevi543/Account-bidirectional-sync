@@ -1,0 +1,34 @@
+[
+
+{
+"accountName": "godha",
+"accountNumber": "101",
+"accountSite": "aaaa",
+"state": "telangana",
+"zipcode": "500054",
+"street": "4",
+"country": "India",
+"city": "hyd"
+},
+{
+"accountName": "karthik",
+"accountNumber": "102",
+"accountSite": "aabb",
+"state": "telangana",
+"zipcode": "500054",
+"street": "4",
+"country": "India",
+"city": "hyd"
+},
+{
+"accountName": "bandari",
+"accountNumber": "103",
+"accountSite": "aacc",
+"state": "telangana",
+"zipcode": "500054",
+"street": "4",
+"country": "India",
+"city": "hyd"
+}
+
+]

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<configuration doc:name="Configuration" doc:id="af912f69-5e6d-4492-8c0d-54bce6977c0f" defaultErrorHandler-ref="Exception_Handler" />
+	<error-handler name="Exception_Handler" doc:id="af5f7b0b-2e8a-47ef-afbb-5ebf1415a169" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7167848b-de18-4304-9de6-2483aeae5cde" type="HTTP:BAD_REQUEST">
+			<ee:transform doc:name="Transform Message" doc:id="7480caba-99bb-4cbc-b6d7-d2c62e3272ee" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "invalid request message",
+	"type": 400,
+	"description": error.description
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="statusCode" ><![CDATA[400]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="99c58916-fd38-4e85-8599-485836d6058a" type="HTTP:INTERNAL_SERVER_ERROR">
+			<ee:transform doc:name="Transform Message" doc:id="050ab30f-35a4-4fe2-a77d-5f9bd1a1a8c6" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Internal Server Error",
+	"type": 500,
+	"description": error.description
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="statusCode" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="496f7121-bca2-41ce-bc12-64f9411c1588" type="HTTP:UNSUPPORTED_MEDIA_TYPE">
+			<ee:transform doc:name="Transform Message" doc:id="5e84dfd4-1122-456d-9379-6d87ebf2f299" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Unsupported Payload Format",
+	"type": 415,
+	"description": error.description
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="statusCode" ><![CDATA[415]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f632f2a9-c24a-46e8-aff6-6e34263b12c5" type="HTTP:NOT_FOUND">
+			<ee:transform doc:name="Transform Message" doc:id="98afddbc-03a7-41b5-99b5-37fb5231e321" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Server Not Found",
+	"type": 404,
+	"description": error.description
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="statusCode" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="57aa6012-fba4-4342-9ec8-eb68e8cf15df" type="ANY">
+			<ee:transform doc:name="Transform Message" doc:id="cccb3e94-ce0b-48e9-bcb7-2003397f60d7" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Issues Found",
+	"description": error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-continue>
+	</error-handler>
+</mule>

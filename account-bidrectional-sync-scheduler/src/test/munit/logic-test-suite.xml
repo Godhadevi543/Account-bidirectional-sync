@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<munit:config name="logic-test-suite.xml" />
+	<munit:test name="logic-test-suite-insertIntoDBTest" doc:id="dd469e05-4d52-4545-a223-98584c51bd11" description="Test">
+		<munit:behavior>
+			<set-payload value='{"name": "godha","site": "g-site","street": "3","city": "hyd","zipcode": "13","state": "tg","country": "India"}' doc:name="Set Payload" doc:id="872f6d72-213a-4990-915a-3f420df5324f" />
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to insertIntoDB" doc:id="72de2643-d1d8-43ae-af14-6ab3e76cd5ba" name="insertIntoDB"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="9ceeb1b5-a461-4eac-b064-5bdbc0baed8c" message="Invalid Data" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="logic-test-suite-insertIntoSalesforceTest" doc:id="63fa2d34-b18a-4b8f-88e7-2d96d3fdf3eb" description="Test">
+		<munit:behavior >
+			<set-payload value='{"name": "godha","site": "g-site","street": "3","city": "hyd","zipcode": "13","state": "tg","country": "India"}' doc:name="Set Payload" doc:id="c152fa3e-26c7-4bf9-84d3-7bed6070a052" />
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to insertIntoSalesforce" doc:id="637e118f-57a0-4e4c-8dfb-b29b7e9433e1" name="insertIntoSalesforce"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="3e90b398-bd17-4af0-bca5-a8daf510e2e8" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="logic-test-suite-insertIntoSalesforceTest1" doc:id="e4e12035-d7f7-43a6-ac77-2f7f7385320d" description="Test">
+		<munit:behavior >
+			<set-payload value='{"name": "godha","site": "g-site","street": "3","city": "hyd","zipcode": "13","state": "tg","country": "India"}' doc:name="Set Payload" doc:id="74f5850c-70c0-4fa5-b5bd-49e420b561e1" />
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to insertIntoSalesforce" doc:id="c41e5a3c-0b26-4cae-a503-9b25c2b34fcd" name="insertIntoSalesforce"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="7679acdc-272c-4f65-84ec-8e4f3d0f7264" expression="#[payload]" is="#[MunitTools::not(0)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="logic-test-suite-insertIntoSalesforceTest2" doc:id="a3d87b4f-b4fc-4ca9-815f-9b29f873fa9f" description="Test">
+		<munit:behavior >
+			<set-payload value='{"name": "godha","site": "g-site","street": "3","city": "hyd","zipcode": "13","state": "tg","country": "India"}' doc:name="Set Payload" doc:id="fe080911-79bd-46a9-865a-625cb1a67558" />
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to insertIntoSalesforce" doc:id="0f48e9d7-5450-4c34-9b31-75d4a78cb37c" name="insertIntoSalesforce"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="c5da4a02-3e81-4a3b-a050-bdbc3ffa83df" expression="#[payload]" is="#[MunitTools::not(MunitTools::equalTo(0))]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="logic-test-suite-insertIntoDBTest1" doc:id="4b1c9e29-903b-43c5-ae15-f25566f38261" description="Test">
+		<munit:behavior >
+			<set-payload value='{"name": "godha","site": "g-site","street": "3","city": "hyd","zipcode": "13","state": "tg","country": "India"}' doc:name="Set Payload" doc:id="c18698b5-732d-4fde-b525-54a3e693b680" />
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to insertIntoDB" doc:id="aa6b4a0b-24c9-420a-a187-7b021097ec72" name="insertIntoDB"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="cea37acf-192c-49cd-b413-ebfa0e351d45" expression="#[payload]" is="#[MunitTools::not(MunitTools::equalTo(0))]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="logic-test-suite-insertIntoDBTest2" doc:id="1002819e-2ebb-438a-93df-20e39b23a62e" description="Test">
+		<munit:behavior >
+			<set-payload value='{"name": "godha","site": "g-site","street": "3","city": "hyd","zipcode": "13","state": "tg","country": "India"}' doc:name="Set Payload" doc:id="318c998a-6390-41f4-9649-1c0133403f81" />
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to insertIntoDB" doc:id="1d54c5b1-ccac-4451-8910-f115497df291" name="insertIntoDB"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="d402abc6-8814-4949-ac93-ca8307cee66b" expression="#[payload]" is="#[MunitTools::not(0)]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="insertIntoSalesforce" doc:id="7f54184f-2105-4824-b6d3-8fa4ae456f41" >
+		<os:retrieve doc:name="Retrieve" doc:id="d4f35fb1-d555-4157-ab3e-3fbd96a6956d" key="indata" target="outdata" objectStore="Object_store">
+			<os:default-value ><![CDATA[2020-11-29 20:31:07]]></os:default-value>
+		</os:retrieve>
+		<db:select doc:name="Select" doc:id="af87067d-19c6-4b18-9bfd-f084bdd41df8" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from account where lastModifiedDate> :data]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	"data":vars.outdata
+}]]]></db:input-parameters>
+		</db:select>
+		<logger level="INFO" doc:name="Logger" doc:id="93c63770-e3ee-48dd-adee-1374bec9916b" message="#['Input DB data: ' ++ write(payload, 'application/json', {'indent': true})]"/>
+		<os:store doc:name="Store" doc:id="639f58c8-ecc7-4f25-ae35-7ff0d66cf3f5" key="indata" failOnNullValue="false" objectStore="Object_store">
+			<os:value ><![CDATA[#[max(payload map $.lastModifiedDate)]]]></os:value>
+		</os:store>
+		<batch:job jobName="db-salesforce" doc:id="b39f76c5-0c88-42f7-bd23-37d2ef475165">
+			<batch:process-records >
+				<batch:step name="getAccountFromSalesforce" doc:id="bbc26884-0e4b-47eb-96db-1e04ca46ac8c" >
+					<ee:transform doc:name="Transform Message" doc:id="78270f0c-024e-4c3a-b3b2-80f76b859569">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+	Name: payload.accountName,
+    Site: payload.accountSite,
+    BillingCity: payload.city,
+    BillingCountry: payload.country,
+    BillingPostalCode: payload.zipcode, 
+	BillingState: payload.state,
+	BillingStreet: payload.street
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="d1837ab5-0294-4d3e-b356-0bd9ffe5c505" size="2">
+						<salesforce:create type="Contact" doc:name="Create" doc:id="831afaea-4fd7-4b66-b82e-04293d298bdc" config-ref="Salesforce_Config"/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<os:store doc:name="Store" doc:id="606f4a02-0521-44f9-9a71-52c66b655a9a" key="state" failOnNullValue="false" objectStore="Object_store">
+					<os:value ><![CDATA[dataFromSalesforce]]></os:value>
+				</os:store>
+			</batch:on-complete>
+		</batch:job>
+	</flow>
+	<flow name="insertIntoDB" doc:id="d77d3cdb-8adc-4b43-b118-bc68c5f0cb16" >
+		<salesforce:query doc:name="Query" doc:id="3ee0a8a1-8ebe-482f-bec0-c210160b2904" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query ><![CDATA[select Name,Site, BillingCity,BillingCountry,BillingPostalCode,BillingState,BillingStreet from Account where LastModifiedDate> :timestamp]]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[%dw 2.0
+output application/java
+---
+{
+	 "timestamp":(now() - |P1D|) as String
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<batch:job jobName="business-logicBatch_Job" doc:id="d429d003-e587-42c4-9e51-18235a0b88b7" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="aa34b116-6255-4f5a-94d7-78c19c7578bc" >
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="e7d49ce5-79c1-4ebc-934b-7f2810fb60f4" size="2">
+						<ee:transform doc:name="Transform Message" doc:id="adba4b2e-1d98-4ee0-9e47-4306b53fabdf">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload map(payload, index)->
+{
+	accountName: payload.Name,
+    accountSite: payload.Site,
+    city: payload.BillingCity,
+    country: payload.BillingCountry,
+    zipcode: payload.BillingPostalCode, 
+	state: payload.BillingState,
+	street: payload.BillingStreet
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+						<db:bulk-insert doc:name="Bulk insert" doc:id="04e2cc3a-780a-4a3e-9026-c2b75051ba61" config-ref="Database_Config">
+						<db:sql><![CDATA[insert into account(accountName,accountSite,street,city,zipcode,state,country) values(:accountName,:accountSite,:street,:city,:zipcode,:state,:country)]]></db:sql>
+					</db:bulk-insert>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<os:store doc:name="Store" doc:id="4bc5719d-d43b-4586-b68e-766242646375" key="state" failOnNullValue="false" objectStore="Object_store">
+					<os:value><![CDATA[dataFromDatabase]]></os:value>
+				</os:store>
+			</batch:on-complete>
+		</batch:job>
+	</flow>
+</mule>
